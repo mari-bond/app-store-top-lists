@@ -1,2 +1,2 @@
 require './main'
-run App
+run Api

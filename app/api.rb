@@ -1,15 +1,17 @@
 require 'sinatra'
 
 class Api < Sinatra::Base
-  get '/categories/:category_id/apps/:monetization' do
+  main_path = %r{/categories/(\d+)/apps/(paid|free|grossing)}
+
+  get %r{^#{main_path}$} do |category_id, monetization|
 
   end
 
-  get '/categories/:category_id/apps/:monetization/:rank' do
+  get %r{^#{main_path}/(\d+)$} do |category_id, monetization, rank|
 
   end
 
-  get '/categories/:category_id/apps/:monetization/publishers' do
+  get %r{^#{main_path}/publishers$} do |category_id, monetization|
 
   end
 end

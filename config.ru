@@ -1,2 +1,2 @@
-require './main'
+require './app/api'
 run Api

@@ -28,16 +28,23 @@ RSpec.describe AppstoreClient do
     end
   end
 
-  describe 'should find app by id' do
-    let(:request) {'https://itunes.apple.com/lookup?id=6723'}
-
-    it 'success' do
+  describe 'should find app by ids' do
+    it 'success, single id' do
+      request = 'https://itunes.apple.com/lookup?id=6723'
       response = {"description" => "Top-ranked Yelp"}
       stub_request(request, 200, response)
       expect(AppstoreClient.new.lookup(6723)).to eq response
     end
 
+    it 'success, multiple ids' do
+      request = 'https://itunes.apple.com/lookup?id=6723,8934,1290'
+      response = {"description" => "Top-ranked Yelp"}
+      stub_request(request, 200, response)
+      expect(AppstoreClient.new.lookup(['6723', '8934', '1290'])).to eq response
+    end
+
     it 'fail' do
+      request = 'https://itunes.apple.com/lookup?id=6723'
       stub_request(request, 400, 'Some errors')
       expect(AppstoreClient.new.lookup(6723)).to eq nil
     end

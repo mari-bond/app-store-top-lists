@@ -10,8 +10,9 @@ class AppstoreClient
     parse_response response
   end
 
-  def lookup(app_id)
-    response = connection.get('lookup', { id: app_id })
+  def lookup(app_ids)
+    ids_string = [app_ids].flatten.join(',')
+    response = connection.get('lookup', { id: ids_string })
 
     parse_response response
   end

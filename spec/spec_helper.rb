@@ -1,10 +1,12 @@
 ENV['RACK_ENV'] = 'test'
 
 require "./config/environment"
+require 'fakeredis/rspec'
+require 'factories/apps'
 
 RSpec.configure do |config|
   config.include Rack::Test::Methods
-
+  config.include FactoryGirl::Syntax::Methods
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
   end

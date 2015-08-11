@@ -2,29 +2,45 @@ require "spec_helper"
 require "./app/api"
 
 RSpec.describe Api do
-  let(:app1) {{ id: 1, name: 'App1', description: 'App1 desc', icon_url: 'ur1',
-    publisher_id: 2434, publisher_name: 'Yelp', price: 1.99, version: '3.4.5', rating: 3 }}
+  let(:app1) {App.new id: '1', name: 'App1', description: 'App1 desc', icon_url: 'ur1',
+    publisher_id: '2434', publisher_name: 'Yelp', price: '1.99', version: '3.4.5', rating: '3' }
 
-  let(:app2) {{ id: 2, name: 'App2', description: 'App2 desc', icon_url: 'url2',
-    publisher_id: 5678, publisher_name: 'Fizz', price: 3, version: '1.1', rating: 4.5 }}
-  let(:app3) {{ id: 3, name: 'App3', description: 'App3 desc', icon_url: 'url3',
-    publisher_id: 9123, publisher_name: 'GoingApps', price: 2.99, version: '2.0', rating: 6.0 }}
+  let(:app2) {App.new id: '2', name: 'App2', description: 'App2 desc', icon_url: 'url2',
+    publisher_id: '5678', publisher_name: 'Fizz', price: '3', version: '1.1', rating: '4.5' }
+  let(:app3) {App.new id: '3', name: 'App3', description: 'App3 desc', icon_url: 'url3',
+    publisher_id: '9123', publisher_name: 'GoingApps', price: '2.99', version: '2.0', rating: '6.0' }
 
-  let(:app4) {{ id: 4, name: 'App4', description: 'App4 desc', icon_url: 'url4',
-    publisher_id: 2434, publisher_name: 'Yelp', price: 0.00, version: '3.2', rating: 2.5 }}
-  let(:app5) {{ id: 5, name: 'App5', description: 'App5 desc', icon_url: 'url5',
-    publisher_id: 9123, publisher_name: 'GoingApps', price: 0.00, version: '6.0', rating: 11.0 }}
-  let(:app6) {{ id: 6, name: 'App6', description: 'App6 desc', icon_url: 'url6',
-    publisher_id: 5678, publisher_name: 'Fizz', price: 0.00, version: '8.0', rating: 7.2 }}
-  let(:app7) {{ id: 7, name: 'App7', description: 'App7 desc', icon_url: 'url7',
-    publisher_id: 5678, publisher_name: 'Fizz', price: 0.00, version: '1.0', rating: 8.4 }}
-  let(:app8) {{ id: 8, name: 'App8', description: 'App8 desc', icon_url: 'url8',
-    publisher_id: 5678, publisher_name: 'Fizz', price: 0.00, version: '9.2', rating: 9.7 }}
-  let(:app9) {{ id: 9, name: 'App9', description: 'App9 desc', icon_url: 'url9',
-    publisher_id: 9123, publisher_name: 'GoingApps', price: 0.00, version: '1.3', rating: 2.7 }}
+  let(:app4) {App.new id: '4', name: 'App4', description: 'App4 desc', icon_url: 'url4',
+    publisher_id: '2434', publisher_name: 'Yelp', price: '0.00', version: '3.2', rating: '2.5' }
+  let(:app5) {App.new id: '5', name: 'App5', description: 'App5 desc', icon_url: 'url5',
+    publisher_id: '9123', publisher_name: 'GoingApps', price: '0.00', version: '6.0', rating: '11.0' }
+  let(:app6) {App.new id: '6', name: 'App6', description: 'App6 desc', icon_url: 'url6',
+    publisher_id: '5678', publisher_name: 'Fizz', price: '0.00', version: '8.0', rating: '7.2' }
+  let(:app7) {App.new id: '7', name: 'App7', description: 'App7 desc', icon_url: 'url7',
+    publisher_id: '5678', publisher_name: 'Fizz', price: '0.00', version: '1.0', rating: '8.4' }
+  let(:app8) {App.new id: '8', name: 'App8', description: 'App8 desc', icon_url: 'url8',
+    publisher_id: '5678', publisher_name: 'Fizz', price: '0.00', version: '9.2', rating: '9.7' }
+  let(:app9) {App.new id: '9', name: 'App9', description: 'App9 desc', icon_url: 'url9',
+    publisher_id: '9123', publisher_name: 'GoingApps', price: '0.00', version: '1.3', rating: '2.7' }
 
   def app
     Api # this defines the active application for this test
+  end
+
+  def stub_appstore_requests
+    grouped_apps = { paid: [app1], grossing: [app2, app3], free: [app4, app5, app6, app7, app8, app9] }
+    grouped_app_ids = grouped_apps.inject({}){ |h, (group, apps)| h[group] = apps.map{|app| app.id}; h }
+    faraday = Faraday.new do |builder|
+      builder.adapter :test, Faraday::Adapter::Test::Stubs.new do |stub|
+        stub_top_requests(stub, grouped_app_ids)
+        stub_lookup_requests(stub, grouped_apps)
+      end
+    end
+    allow_any_instance_of(AppstoreClient).to receive(:connection).and_return(faraday)
+  end
+
+  before do
+    stub_appstore_requests
   end
 
   describe 'list of apps by category and monetization' do
@@ -40,12 +56,11 @@ RSpec.describe Api do
       expect(last_response.status).to eq 404
     end
 
-    it "should return bad request error" do
-      data = { errors: 'App store error' }
+    it "should return blank array" do
       get "/categories/90/apps/paid"
 
-      expect(last_response.body).to eq(data.to_json)
-      expect(last_response.status).to eq 400
+      expect(last_response.body).to eq('[]')
+      expect(last_response.status).to eq 200
     end
 
     it "should return array of paid apps in weather category (6001)" do

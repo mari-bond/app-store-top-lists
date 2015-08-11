@@ -1,6 +1,7 @@
 ENV['RACK_ENV'] = 'test'
 
 require "./config/environment"
+require "support/appstore_stubs"
 require 'fakeredis/rspec'
 require 'factories/apps'
 

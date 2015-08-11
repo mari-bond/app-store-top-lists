@@ -73,4 +73,29 @@ RSpec.describe App do
 
     apps.each{ |app| expect(app).to have_received(:save) }
   end
+
+  describe 'top publishers' do
+    let(:category) { '6001' }
+    let(:monetization) { 'grossing' }
+
+    it 'should return top publishers with apps names sorted by apps amount' do
+      app1 = build(:app, publisher_id: '12345', publisher_name: 'test')
+      app2 = build(:app, publisher_id: '55555', publisher_name: 'yelp')
+      app3 = build(:app, publisher_id: '12345', publisher_name: 'test')
+      app4 = build(:app, publisher_id: '9999', publisher_name: 'some')
+      app5 = build(:app, publisher_id: '55555', publisher_name: 'yelp')
+      app6 = build(:app, publisher_id: '55555', publisher_name: 'yelp')
+      apps = [app1, app2, app3, app4, app5, app6]
+
+      expect(App.top_publishers(apps)).to eq [
+        {publisher_id: '55555', publisher_name: 'yelp', rank: 1, apps_amount: 3, apps: [app2.name, app5.name, app6.name] },
+        {publisher_id: '12345', publisher_name: 'test', rank: 2, apps_amount: 2, apps: [app1.name, app3.name] },
+        {publisher_id: '9999', publisher_name: 'some', rank: 3, apps_amount: 1, apps: [app4.name] }
+      ]
+    end
+
+    it 'should return blank array if apps passed' do
+      expect(App.top_publishers([])).to eq []
+    end
+  end
 end

@@ -68,4 +68,17 @@ RSpec.describe AppsFetcher do
       expect(fetcher.top_by_rank('2')).to eq(nil)
     end
   end
+
+  it 'should fetch top apps publishers by category and monetization' do
+    fetcher = AppsFetcher.new('6001', 'grossing')
+    publishers = [{publisher_id: '5678', publisher_name: 'Fizz', rank: 1, apps_amount: 3, apps: ['App6', 'App7', 'App8'] },
+      {publisher_id: '9123', publisher_name: 'GoingApps', rank: 2, apps_amount: 2, apps: ['App5', 'App9'] },
+      {publisher_id: '2434', publisher_name: 'Yelp', rank: 3, apps_amount: 1, apps: ['App4'] }
+    ]
+    apps = [app1, app5]
+    allow(fetcher).to receive(:fetch_top).and_return apps
+    allow(App).to receive(:top_publishers).with(apps).and_return publishers
+
+    expect(fetcher.fetch_publishers).to eq publishers
+  end
 end

@@ -157,7 +157,7 @@ RSpec.describe Api do
     end
 
     it "should return array of paid apps in weather category (6001)" do
-      publishers = [{publisher_id: 2434, publisher_name: 'Yelp', rank: 1, apps_amount: 1, apps: ['App1'] }]
+      publishers = [{publisher_id: '2434', publisher_name: 'Yelp', rank: 1, apps_amount: 1, apps: ['App1'] }]
       get "/categories/6001/apps/paid/publishers"
 
       expect(last_response.body).to eq(publishers.to_json)
@@ -165,9 +165,9 @@ RSpec.describe Api do
     end
 
     it "should return array of free apps in weather category (6001)" do
-      publishers = [{publisher_id: 5678, publisher_name: 'Fizz', rank: 1, apps_amount: 3, apps: ['App6', 'App7', 'App8'] },
-        {publisher_id: 9123, publisher_name: 'GoingApps', rank: 2, apps_amount: 2, apps: ['App5', 'App9'] },
-        {publisher_id: 2434, publisher_name: 'Yelp', rank: 3, apps_amount: 1, apps: ['App4'] }
+      publishers = [{publisher_id: '5678', publisher_name: 'Fizz', rank: 1, apps_amount: 3, apps: ['App6', 'App7', 'App8'] },
+        {publisher_id: '9123', publisher_name: 'GoingApps', rank: 2, apps_amount: 2, apps: ['App5', 'App9'] },
+        {publisher_id: '2434', publisher_name: 'Yelp', rank: 3, apps_amount: 1, apps: ['App4'] }
       ]
       get "/categories/6001/apps/free/publishers"
 
@@ -176,8 +176,8 @@ RSpec.describe Api do
     end
 
     it "should return array of grossing apps in weather category (6001)" do
-      publishers = [{publisher_id: 5678, publisher_name: 'Fizz', rank: 1, apps_amount: 1, apps: ['App2'] },
-        {publisher_id: 9123, publisher_name: 'GoingApps', rank: 2, apps_amount: 1, apps: ['App3'] },
+      publishers = [{publisher_id: '5678', publisher_name: 'Fizz', rank: 1, apps_amount: 1, apps: ['App2'] },
+        {publisher_id: '9123', publisher_name: 'GoingApps', rank: 2, apps_amount: 1, apps: ['App3'] },
       ]
       get "/categories/6001/apps/grossing/publishers"
 

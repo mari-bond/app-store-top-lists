@@ -19,6 +19,10 @@ class AppsFetcher
     fetch_top[rank.to_i - 1]
   end
 
+  def fetch_publishers
+    App.top_publishers(fetch_top)
+  end
+
   private
 
   def find_top

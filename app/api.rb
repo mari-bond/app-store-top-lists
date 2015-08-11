@@ -15,6 +15,6 @@ class Api < Sinatra::Base
   end
 
   get %r{^#{main_path}/publishers$} do |category_id, monetization|
-
+    json AppsFetcher.new(category_id, monetization).fetch_publishers
   end
 end

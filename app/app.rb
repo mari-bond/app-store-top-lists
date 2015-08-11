@@ -66,6 +66,23 @@ class App
       .compact
     end
 
+    def top_publishers(apps)
+      publishers = []
+      apps.group_by(&:publisher_id).each do |publisher_id, apps|
+        publishers << {
+          publisher_id: publisher_id,
+          publisher_name: apps.first.publisher_name,
+          rank: 0,
+          apps_amount: apps.count,
+          apps: apps.map(&:name)
+        }
+      end
+      publishers.sort_by!{ |data| -data[:apps_amount] }
+      publishers.map.with_index{ |publisher, index| publisher[:rank] = index + 1 }
+
+      publishers
+    end
+
     def save_top_list(category_id, list)
       list.each do |monetization, app_ids|
         key = top_list_key(category_id, monetization)

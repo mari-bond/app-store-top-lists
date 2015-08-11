@@ -2,6 +2,7 @@ class App
   @@attributes = [:id, :name, :description, :icon_url, :publisher_id,
     :publisher_name, :price, :version, :rating
   ].freeze
+  @@expiration = 7 * 24 * 60 * 60
 
   attr_accessor *@@attributes
 
@@ -37,6 +38,7 @@ class App
       redis_data << self[attribute]
     end
     $redis.hmset(app_key, *redis_data)
+    $redis.expire(app_key, @@expiration)
   end
 
   def app_key
@@ -69,7 +71,10 @@ class App
     def save_top_list(category_id, list)
       list.each do |monetization, app_ids|
         key = top_list_key(category_id, monetization)
-        app_ids.each{ |app_id| $redis.rpush(key, app_id) }
+        app_ids.each do |app_id|
+          $redis.rpush(key, app_id)
+          $redis.expire(key, @@expiration)
+        end
       end
     end
 

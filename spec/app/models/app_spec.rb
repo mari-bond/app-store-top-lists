@@ -1,5 +1,5 @@
 require "spec_helper"
-require "./app/app"
+require "./app/models/app"
 
 RSpec.describe App do
   describe 'find app by id' do

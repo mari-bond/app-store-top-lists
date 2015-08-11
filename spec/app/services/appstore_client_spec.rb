@@ -1,5 +1,5 @@
 require "spec_helper"
-require "./app/appstore_client"
+require "./app/services/appstore_client"
 
 RSpec.describe AppstoreClient do
   def stub_request(request, status, response)

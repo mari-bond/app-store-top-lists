@@ -1,4 +1,4 @@
-require_relative 'app'
+require './app/models/app'
 
 class AppstoreParser
   MONETIZATION_CODES = {

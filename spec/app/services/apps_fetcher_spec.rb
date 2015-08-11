@@ -1,6 +1,6 @@
 require "spec_helper"
-require "./app/apps_fetcher"
-require "./app/app"
+require "./app/services/apps_fetcher"
+require "./app/models/app"
 
 RSpec.describe AppsFetcher do
   let(:app1) { build(:app) }

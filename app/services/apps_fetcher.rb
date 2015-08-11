@@ -1,4 +1,4 @@
-require_relative 'app'
+require './app/models/app'
 require_relative 'appstore_client'
 require_relative 'appstore_parser'
 

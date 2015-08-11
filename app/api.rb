@@ -1,7 +1,7 @@
 require 'sinatra'
 require "sinatra/json"
 require "./config/environment"
-require_relative 'apps_fetcher'
+require_relative 'services/apps_fetcher'
 
 class Api < Sinatra::Base
   main_path = %r{/categories/(\d+)/apps/(paid|free|grossing)}

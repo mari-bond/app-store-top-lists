@@ -107,12 +107,11 @@ RSpec.describe Api do
       expect(last_response.status).to eq 404
     end
 
-    it "should return bad request error" do
-      data = { errors: 'App store error' }
+    it "should return nil if could not fetch from appstore" do
       get "/categories/90/apps/paid/1"
 
-      expect(last_response.body).to eq(data.to_json)
-      expect(last_response.status).to eq 400
+      expect(last_response.body).to eq('null')
+      expect(last_response.status).to eq 200
     end
 
     it "should return first app in paid apps in weather category (6001)" do
@@ -122,16 +121,8 @@ RSpec.describe Api do
       expect(last_response.status).to eq 200
     end
 
-    it "should return error if app cannot be found by rank position" do
-      data = { errors: 'Rank position is out of scope' }
-      get "/categories/6001/apps/paid/5"
-
-      expect(last_response.body).to eq(data.to_json)
-      expect(last_response.status).to eq 400
-    end
-
     it "should return third app in free apps in weather category (6001)" do
-      get "/categories/6001/apps/free/3"
+      get "/categories/6001/apps/free/4"
 
       expect(last_response.body).to eq(app7.to_json)
       expect(last_response.status).to eq 200
@@ -158,12 +149,11 @@ RSpec.describe Api do
       expect(last_response.status).to eq 404
     end
 
-    it "should return bad request error" do
-      data = { errors: 'App store error' }
+    it "should return blank array if could not fetch from appstore" do
       get "/categories/90/apps/paid/publishers"
 
-      expect(last_response.body).to eq(data.to_json)
-      expect(last_response.status).to eq 400
+      expect(last_response.body).to eq('[]')
+      expect(last_response.status).to eq 200
     end
 
     it "should return array of paid apps in weather category (6001)" do

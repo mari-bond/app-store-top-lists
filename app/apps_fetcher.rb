@@ -15,6 +15,10 @@ class AppsFetcher
     apps.any? ? apps : fetch_top_from_appstore
   end
 
+  def top_by_rank(rank)
+    fetch_top[rank.to_i - 1]
+  end
+
   private
 
   def find_top

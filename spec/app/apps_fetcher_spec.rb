@@ -41,4 +41,31 @@ RSpec.describe AppsFetcher do
       expect(App).to have_received(:save_top_list).with(category, list)
     end
   end
+
+  describe 'find top app by category, monetization and rank position' do
+    let(:category) { '6001' }
+    let(:monetization) { 'grossing' }
+    let(:fetcher) { AppsFetcher.new(category, monetization) }
+
+    it 'should return app by rank' do
+      apps = [app1, app3, app5]
+      allow(fetcher).to receive(:fetch_top).and_return apps
+
+      expect(fetcher.top_by_rank('3')).to eq app5
+      expect(fetcher.top_by_rank('1')).to eq app1
+    end
+
+    it 'should return error if rank is out of scope' do
+      apps = [app1, app3, app5]
+      allow(fetcher).to receive(:fetch_top).and_return apps
+
+      expect(fetcher.top_by_rank('7')).to eq(nil)
+    end
+
+    it 'should return nil if no apps fetched' do
+      allow(fetcher).to receive(:fetch_top).and_return []
+
+      expect(fetcher.top_by_rank('2')).to eq(nil)
+    end
+  end
 end

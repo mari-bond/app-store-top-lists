@@ -11,7 +11,7 @@ class Api < Sinatra::Base
   end
 
   get %r{^#{main_path}/(\d+)$} do |category_id, monetization, rank|
-
+    json AppsFetcher.new(category_id, monetization).top_by_rank(rank)
   end
 
   get %r{^#{main_path}/publishers$} do |category_id, monetization|

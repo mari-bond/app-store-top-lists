@@ -61,8 +61,7 @@ class App
     end
 
     def top(category_id, monetization)
-      $redis.smembers(top_list_key(category_id, monetization))
-      .reverse
+      $redis.lrange(top_list_key(category_id, monetization), 0, 200)
       .map{ |app_id| find(app_id) }
       .compact
     end
@@ -70,7 +69,7 @@ class App
     def save_top_list(category_id, list)
       list.each do |monetization, app_ids|
         key = top_list_key(category_id, monetization)
-        app_ids.each{ |app_id| $redis.sadd(key, app_id) }
+        app_ids.each{ |app_id| $redis.rpush(key, app_id) }
       end
     end
 

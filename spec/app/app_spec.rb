@@ -25,12 +25,12 @@ RSpec.describe App do
       store_key = "top_6001_free"
       store_key2 = "top_6011_free"
       store_key3 = "top_6001_paid"
-      $redis.sadd(store_key, app1.id)
-      $redis.sadd(store_key3, app3.id)
-      $redis.sadd(store_key, app4.id)
-      $redis.sadd(store_key2, app3.id)
-      $redis.sadd(store_key2, app1.id)
-      $redis.sadd(store_key, app2.id)
+      $redis.rpush(store_key, app1.id)
+      $redis.rpush(store_key3, app3.id)
+      $redis.rpush(store_key, app4.id)
+      $redis.rpush(store_key2, app3.id)
+      $redis.rpush(store_key2, app1.id)
+      $redis.rpush(store_key, app2.id)
       allow(App).to receive(:find) do |app_id|
         [app1, app2, app4].select{ |app| app.id == app_id }.first
       end
@@ -47,17 +47,17 @@ RSpec.describe App do
     it 'should save app ids to storage' do
       App.save_top_list('6001', {free: ['1','2'], paid: ['4', '6'], grossing: ['5']})
 
-      expect($redis.smembers('top_6001_paid')).to eq(['6', '4'])
-      expect($redis.smembers('top_6001_free')).to eq(['2', '1'])
-      expect($redis.smembers('top_6001_grossing')).to eq(['5'])
+      expect($redis.lrange('top_6001_paid', 0, 200)).to eq(['4', '6'])
+      expect($redis.lrange('top_6001_free', 0, 200)).to eq(['1', '2'])
+      expect($redis.lrange('top_6001_grossing', 0, 200)).to eq(['5'])
     end
 
     it 'should save nothing if no app ids passed' do
       App.save_top_list('6001', {})
 
-      expect($redis.smembers('top_6001_paid')).to eq([])
-      expect($redis.smembers('top_6001_free')).to eq([])
-      expect($redis.smembers('top_6001_grossing')).to eq([])
+      expect($redis.lrange('top_6001_paid', 0, 200)).to eq([])
+      expect($redis.lrange('top_6001_free', 0, 200)).to eq([])
+      expect($redis.lrange('top_6001_grossing', 0, 200)).to eq([])
     end
   end
 

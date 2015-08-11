@@ -20,7 +20,20 @@ class AppsFetcher
   end
 
   def fetch_publishers
-    App.top_publishers(fetch_top)
+    publishers = []
+    fetch_top.group_by(&:publisher_id).each do |publisher_id, apps|
+      publishers << {
+        publisher_id: publisher_id,
+        publisher_name: apps.first.publisher_name,
+        rank: 0,
+        apps_amount: apps.count,
+        apps: apps.map(&:name)
+      }
+    end
+    publishers.sort_by!{ |data| -data[:apps_amount] }
+    publishers.map.with_index{ |publisher, index| publisher[:rank] = index + 1 }
+
+    publishers
   end
 
   private

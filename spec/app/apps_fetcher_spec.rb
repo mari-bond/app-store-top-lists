@@ -69,16 +69,30 @@ RSpec.describe AppsFetcher do
     end
   end
 
-  it 'should fetch top apps publishers by category and monetization' do
-    fetcher = AppsFetcher.new('6001', 'grossing')
-    publishers = [{publisher_id: '5678', publisher_name: 'Fizz', rank: 1, apps_amount: 3, apps: ['App6', 'App7', 'App8'] },
-      {publisher_id: '9123', publisher_name: 'GoingApps', rank: 2, apps_amount: 2, apps: ['App5', 'App9'] },
-      {publisher_id: '2434', publisher_name: 'Yelp', rank: 3, apps_amount: 1, apps: ['App4'] }
-    ]
-    apps = [app1, app5]
-    allow(fetcher).to receive(:fetch_top).and_return apps
-    allow(App).to receive(:top_publishers).with(apps).and_return publishers
+  describe 'should fetch top apps publishers by category and monetization' do
+    let(:fetcher) { AppsFetcher.new('6001', 'grossing') }
 
-    expect(fetcher.fetch_publishers).to eq publishers
+    it 'should return top publishers with apps names sorted by apps amount' do
+      app1 = build(:app, publisher_id: '12345', publisher_name: 'test')
+      app2 = build(:app, publisher_id: '55555', publisher_name: 'yelp')
+      app3 = build(:app, publisher_id: '12345', publisher_name: 'test')
+      app4 = build(:app, publisher_id: '9999', publisher_name: 'some')
+      app5 = build(:app, publisher_id: '55555', publisher_name: 'yelp')
+      app6 = build(:app, publisher_id: '55555', publisher_name: 'yelp')
+      apps = [app1, app2, app3, app4, app5, app6]
+      allow(fetcher).to receive(:fetch_top).and_return apps
+
+      expect(fetcher.fetch_publishers).to eq [
+        {publisher_id: '55555', publisher_name: 'yelp', rank: 1, apps_amount: 3, apps: [app2.name, app5.name, app6.name] },
+        {publisher_id: '12345', publisher_name: 'test', rank: 2, apps_amount: 2, apps: [app1.name, app3.name] },
+        {publisher_id: '9999', publisher_name: 'some', rank: 3, apps_amount: 1, apps: [app4.name] }
+      ]
+    end
+
+    it 'should return blank array if no apps' do
+      allow(fetcher).to receive(:fetch_top).and_return []
+
+      expect(fetcher.fetch_publishers).to eq []
+    end
   end
 end
